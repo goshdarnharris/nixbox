@@ -52,7 +52,10 @@ jobs:
       with:
         version: "latest"
 
+    - name: Set up USER environment variable to silence vboxmanage warnings
+      run: echo "USER=${LOGNAME}" >> $GITHUB_ENV
+
     - name: Run build ${{ matrix.BUILDER }} ${{ matrix.ARCH }} and push box to vagrant cloud
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
-      run: make USER=${LOGNAME} VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
+      run: make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
