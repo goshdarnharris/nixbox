@@ -56,7 +56,4 @@ jobs:
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
       run: |
-        echo "USER=$(echo $LOGNAME)" >> $GITHUB_ENV
-        echo $USER
-        echo $LOGNAME
-        make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
+        sudo make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
