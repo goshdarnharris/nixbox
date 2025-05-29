@@ -60,4 +60,4 @@ jobs:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
         REPO: gdharris/nixos
       run: |
-        sudo make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
+        sudo make REPO=${REPO} ATLAS_TOKEN=${ATLAS_TOKEN} VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
