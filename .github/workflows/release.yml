@@ -34,17 +34,20 @@ jobs:
     - name: Create Vagrant Cloud Box
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
+        REPO: gdharris/nixos
       run: make vagrantcloud-create
 
     - name: Set Vagrant Cloud Box is Public
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
+        REPO: gdharris/nixos
       run: make vagrantcloud-update
 
     - name: Delete Old Vagrant Cloud Box Version
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
-      run:  VERSION=${GITHUB_REF#refs/heads/nixos-} make vagrantcloud-delete
+        REPO: gdharris/nixos
+      run: VERSION=${GITHUB_REF#refs/heads/nixos-} make vagrantcloud-delete
 
     - name: Setup `packer`
       uses: hashicorp/setup-packer@main
@@ -55,5 +58,5 @@ jobs:
     - name: Run build ${{ matrix.BUILDER }} ${{ matrix.ARCH }} and push box to vagrant cloud
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
-      run: |
-        sudo make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
+        REPO: gdharris/nixos
+      run: sudo make VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
