@@ -91,7 +91,7 @@ packer-build:  nixos.pkr.hcl version ##Use packer push to vagrant-cloud
 	-var builder="${BUILDER}" \
 	-var cloud_repo=${REPO} \
 	-var version=${VERSION} \
-	-var cloud_token=${ATLAS_TOKEN} \
+	-var cloud_token="${ATLAS_TOKEN}" \
 	-var iso_checksum="$(shell curl -sL https://channels.nixos.org/nixos-${VERSION}/latest-nixos-minimal-${ARCH}-linux.iso.sha256 | grep -Eo '^[0-9a-z]{64}')" \
 	--only=${BUILDER} \
 	$<
