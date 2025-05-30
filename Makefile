@@ -111,16 +111,16 @@ packer-build:  nixos.pkr.hcl version ##Use packer push to vagrant-cloud
 	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/providers" \
 	--data '{ "provider": { "name": "'"${BUILD_PROVIDER}"'", "architecture": "'"${VAGRANT_ARCH}"'", "default_architecture": true } }'
 
-	_UPLOAD_PATH=$(curl -skL \
+	$(eval _UPLOAD_PATH := $(curl -skL \
 	--request GET \
 	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
-	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${VAGRANT_ARCH}/upload" | jq -r .upload_path)
+	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${VAGRANT_ARCH}/upload" | jq -r .upload_path))
 
 	@curl -skL \
 	--request PUT \
 	--header "Connection: keep-alive" \
 	--upload-file nixos-${VERSION}-${BUILDER}-${ARCH}.box \
-	"${_UPLOAD_PATH}"
+	"$(_UPLOAD_PATH)"
 
 	@curl -skL \
 	--request PUT \
