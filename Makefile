@@ -2,6 +2,7 @@
 BUILDER ?= virtualbox-iso.virtualbox
 VERSION ?= 23.05
 ARCH ?= x86_64
+VAGRANT_ARCH ?= amd64
 REPO ?= nixbox/nixos
 USE_EFI ?= false
 REPO_NAME = $(word 1, $(subst /, ,${REPO}))
@@ -96,23 +97,32 @@ packer-build:  nixos.pkr.hcl version ##Use packer push to vagrant-cloud
 	--only=${BUILDER} \
 	$<
 
-	curl -skL \
-	--request GET \
+	@curl \
+	--request POST \
+	--header "Content-Type: application/json" \
 	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
-	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${ARCH}/upload"
+	"https://app.vagrantup.com/api/v2/box/${REPO}/versions" \
+	--data '{ "version": { "version": "'"${VERSION}"'", "description": "NixOS '"${VERSION}"'" } }'
+
+	@curl \
+	--request POST \
+	--header "Content-Type: application/json" \
+	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
+	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/providers" \
+	--data '{ "provider": { "name": "'"${BUILD_PROVIDER}"'", "architecture": "'"${VAGRANT_ARCH}"'", "default_architecture": true } }'
 
 	_UPLOAD_PATH=$(curl -skL \
 	--request GET \
 	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
-	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${ARCH}/upload" | jq -r .upload_path)
+	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${VAGRANT_ARCH}/upload" | jq -r .upload_path)
 
-	curl -skL \
+	@curl -skL \
 	--request PUT \
 	--header "Connection: keep-alive" \
 	--upload-file nixos-${VERSION}-${BUILDER}-${ARCH}.box \
 	"${_UPLOAD_PATH}"
 
-	curl -skL \
+	@curl -skL \
 	--request PUT \
-	--header "Authorization: Bearer $_VAGRANT_CLOUD_TOKEN" \
-	"https://app.vagrantup.com/api/v2/box/$_ORG/$_BOX/version/$_VERSION/release"
+	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
+	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/release"
