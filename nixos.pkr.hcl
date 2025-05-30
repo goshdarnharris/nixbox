@@ -252,19 +252,5 @@ build {
       only                = ["virtualbox-iso.virtualbox", "qemu.qemu", "hyperv-iso.hyperv", "virtualbox-iso.virtualbox-efi", "qemu.qemu-efi"]
       output              = "nixos-${var.version}-${var.builder}-${var.arch}.box"
     }
-    post-processor "vagrant-cloud" {
-      only                = ["virtualbox-iso.virtualbox", "qemu.qemu", "hyperv-iso.hyperv"]
-      access_token        = "${var.cloud_token}"
-      box_tag             = "${var.cloud_repo}"
-      version             = "${var.version}"
-      architecture        = "${lookup(var.vagrant_cloud_arch, var.arch, "amd64")}"
-    }
-    post-processor "vagrant-cloud" {
-      only                = ["virtualbox-iso.virtualbox-efi", "qemu.qemu-efi"]
-      access_token        = "${var.cloud_token}"
-      box_tag             = "${var.cloud_repo}"
-      version             = "${var.version}-efi"
-      architecture        = "${lookup(var.vagrant_cloud_arch, var.arch, "amd64")}"
-    }
   }
 }

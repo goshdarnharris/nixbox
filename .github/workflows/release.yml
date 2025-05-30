@@ -31,6 +31,11 @@ jobs:
             qemu-system-x86 \
             libvirt-daemon-system
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+
     - name: Create Vagrant Cloud Box
       env:
         ATLAS_TOKEN: ${{ secrets.ATLAS_TOKEN }}
@@ -61,3 +66,14 @@ jobs:
         REPO: gdharris/nixos
       run: |
         sudo make REPO=${REPO} ATLAS_TOKEN=${ATLAS_TOKEN} VERSION=${GITHUB_REF#refs/heads/nixos-} BUILDER=${{ matrix.BUILDER }} packer-build 
+
+    # - name: Install Vagrant
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y vagrant
+
+    # - name: Attempt to bring up the box
+    #   run: |
+    #     vagrant init gdharris/nixos --box-version ${GITHUB_REF#refs/heads/nixos-}
+    #     vagrant up --provider="virtualbox""
+    #     vagrant destroy -f

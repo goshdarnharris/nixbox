@@ -95,3 +95,14 @@ packer-build:  nixos.pkr.hcl version ##Use packer push to vagrant-cloud
 	-var iso_checksum="$(shell curl -sL https://channels.nixos.org/nixos-${VERSION}/latest-nixos-minimal-${ARCH}-linux.iso.sha256 | grep -Eo '^[0-9a-z]{64}')" \
 	--only=${BUILDER} \
 	$<
+
+	_UPLOAD_PATH=$(curl -skL \
+	--request GET \
+	--header "Authorization: Bearer ${ATLAS_TOKEN}" \
+	"https://app.vagrantup.com/api/v2/box/${REPO}/version/${VERSION}/provider/${BUILD_PROVIDER}/${ARCH}/upload" | jq -r .upload_path)
+
+	curl -skL \
+	--request PUT \
+	--header "Connection: keep-alive" \
+	--upload-file nixos-${VERSION}-${BUILDER}-${ARCH}.box \
+	${_UPLOAD_PATH}
